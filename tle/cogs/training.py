@@ -40,6 +40,7 @@ class TrainingMode(IntEnum):
     TIMED30 = 3
     TIMED60 = 4
     TIMED1 = 5
+    TIMED120 = 6
 
 
 class TrainingResult(IntEnum):
@@ -195,6 +196,8 @@ class Game:
             return "Timed 30 mins"
         elif self.mode == TrainingMode.TIMED60:
             return "Timed 60 mins"
+        elif self.mode == TrainingMode.TIMED120:
+            return "Timed 120 mins"
 
     def _getBaseLives(self):
         if self.mode == TrainingMode.NORMAL:
@@ -213,6 +216,8 @@ class Game:
             return int(30*60+1)
         if self.mode == TrainingMode.TIMED60:
             return int(60*60+1)
+        if self.mode == TrainingMode.TIMED120:
+            return int(120*60 + 1)
 
     def _newRating(self, success, rating):
         newRating = rating
@@ -277,7 +282,7 @@ class Training(commands.Cog):
             - survival: Seeking for some thrill? In this mode you only have 3 lives (you can skip 3 problems). How far will you get?
             - time trial: Still bored? Prepare for the ultimate challenge: In this mode you will only have limited time to solve each problem. 
                           If you need to skip a problem or if you are too slow at solving the problem you will lose one of your 3 lives.
-                          Available difficulty levels: timed15 (15 minutes for each problem), timed30 (30 minutes), timed60 (60 minutes)
+                          Available difficulty levels: timed15 (15 minutes for each problem), timed30 (30 minutes), timed60 (60 minutes), timed120 (120 minutes)
                           You get some bonus time if you manage to solve a problem within the time limit.
             For further help on usage of a command do ;help training <command> (e.g. ;help training start)        
         """
@@ -315,6 +320,8 @@ class Training(commands.Cog):
                 mode = TrainingMode.TIMED30
             elif arg == "timed60" or arg == "+timed60":
                 mode = TrainingMode.TIMED60
+            elif arg == "timed120" or arg == "+timed120":
+                mode = TrainingMode.TIMED120
             else:
                 unrecognizedArgs.append(arg)
         if len(unrecognizedArgs) > 0:
@@ -537,14 +544,14 @@ class Training(commands.Cog):
     # User commands start here
 
     @training.command(brief='Start a training session',
-                      usage='[rating] [infinite|survival|timed15|timed30|timed60]')
+                      usage='[rating] [infinite|survival|timed15|timed30|timed60|timed120]')
     @cf_common.user_guard(group='training')
     async def start(self, ctx, *args):
         """ Start your training session
             - Game modes:
               - infinite: Play the game in infinite mode (you can skip at any time) [DEFAULT]
               - survival: Challenge mode with only 3 skips available
-              - timed15/timed30/timed60: Challenge mode similar to survival but u only have a limited time to solve your problem. 
+              - timed15/timed30/timed60/timed120: Challenge mode similar to survival but u only have a limited time to solve your problem. 
                                          Slow solves will also reduce your life by 1. Fast solves will increase available time for the next problem.
             - It is possible to change the start rating from 800 to any other valid rating
         """
